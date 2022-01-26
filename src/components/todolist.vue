@@ -1,21 +1,55 @@
 <template>
   <div class="container">
+
        <input type="text" class="todo-input" placeholder="Enter a title todo"
        v-model="newTodo" @keyup.enter="addTodo">
+       
         <input type="text" class="todo-input" placeholder="Enter a description todo"
        v-model="description" @keyup.enter="addTodo">
-       <button @click="addTodo" class="todo-btn">Add</button>
-       <div v-for="todo in todos" :key="todo.id" class="todo-item">
-           <div>
-               {{todo.title}} - {{todo.description}} - {{todo.fecha}} - {{todo.priority}}
-           </div>
-           <div class="remove item">
-               🗑️
-           </div>
-           
-       </div>
-       
-  </div>
+
+        <button @click="addTodo" class="todo-btn">Add</button>
+
+        <transition-group name="fade" enter-active-class="animated fadeInUp" leave-active-class="animated fadeOutDown">
+        <div v-for="(todo,index) in todosFiltered" :key="todo.id" class="todo-item">
+            <div class="todo-item-left">
+                <input type="checkbox" @click="changeStatus(index)">
+                <div class="todo-item-label" :class="{status : todo.status}">
+                   <div>{{todo.title}}</div>
+                   <div>{{todo.description}}</div>
+                   <div>{{todo.date}}</div>
+                   <div>{{todo.priority}}</div>
+                </div>
+            </div>
+
+            <div>
+                <button @click="changePriority(index, prio =0)">High</button>
+                <button @click="changePriority(index, prio =1)">Medium</button>
+                <button @click="changePriority(index, prio =2)">Low</button>
+            </div>
+            <div class="remove-item" @click="removeTodo(key)">
+                🗑️
+            </div>
+        </div>
+        </transition-group>
+
+        <div class="extra-container">
+            <div>{{this.todos.length}} total {{ remaining }} todo left</div>
+        </div>
+
+        <div class="extra-container">
+            <div>
+                <button :class="{ active: filter == 'all' }" @click="filter = 'all'">All</button>
+                <button :class="{ active: filter == 'active' }" @click="filter = 'active'">Active</button>
+                <button :class="{ active: filter == 'completed' }" @click="filter = 'completed'">Completed</button>
+            </div>
+
+            <div>
+                <button @click="clearCompleted">Clear completed</button>
+            </div>
+
+        </div>
+
+    </div>
 </template>
 
 <script>
@@ -25,36 +59,27 @@ export default {
  data(){
       return {
           newTodo: '',
-          id: 3,
+          id: 1,
           description: '',
-
-          todos: [
-              {
-                  'id':1,
-                  'title': 'Vue',
-                  'description': 'is a todo\'s project',
-                  'fecha': new Date().toDateString(),
-                  'status': false,
-                  'priority': 0 //0 high, 1 medium, 2 low
-              },
-              {
-                  'id':2,
-                  'title': 'JS',
-                  'description': 'is a shit\'s project',
-                  'fecha': new Date().toDateString(),
-                  'status': false,
-                  'priority': 0 //0 high, 1 medium, 2 low
-              }
-          ]
+          todos: [],
+          filter: 'all',
       }
  },
  methods: {
+
      addTodo(){
+         if(this.newTodo.length === 0){
+             return
+         }
+         if(this.description.length === 0){
+             return
+         }
+         
          this.todos.push({
              id: this.id,
              title: this.newTodo,
              description: this.description,
-             fecha: new Date().toDateString(),
+             date: new Date().toDateString(),
              status: false,
              priority: 0
          })
@@ -62,13 +87,59 @@ export default {
          this.newTodo = ''
          this.description = ''
          this.id++
-     }
+         this.updateLocal()
+    },
+    updateLocal(){
+            localStorage.setItem('todos', JSON.stringify(this.todos))
+    },
+    changeStatus(index){
+        this.todos[index].status = !this.todos[index].status
+        this.updateLocal()
+    },
+    changePriority(index, prio){
+        this.todos[index].priority = prio
+    },
+    removeTodo(index){
+        this.todos.splice(index, 1)
+        this.updateLocal()
+    },
+    clearCompleted(){
+        this.todos = this.todos.filter(todo => !todo.status)
+        this.updateLocal()
+    }
+    },
+    computed:{
+        remaining() {
+            return this.todos.filter(todo => !todo.status).length
+        },
+        todosFiltered() {
+            let filteredStatus = []
+            if (this.filter == 'all') {
+                filteredStatus = this.todos
+            } else if (this.filter == 'active') {
+                filteredStatus = this.todos.filter(todo => !todo.status)
+            } else if (this.filter == 'completed') {
+                filteredStatus = this.todos.filter(todo => todo.status)
+            }else{
+                filteredStatus = this.todos
+            }
+
+            return filteredStatus.sort((a,b) => a.priority - b.priority)
+        },
+        
+        
+    },
+    mounted(){ 
+        if(JSON.parse(localStorage.getItem('todos')))
+            this.todos = JSON.parse(localStorage.getItem('todos'));
+    }
  }
-}
+
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style>
+@import url("https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css");
+
 .todo-input {
     width: 100%;
     padding: 10px 18px;
@@ -105,13 +176,61 @@ export default {
 	background: rgb(0, 0, 0);
 }
 
-.remove-item {
-    cursor: crosshair;
+.todo-item {
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    animation-duration: 0.3s;
+}
+
+.todo-item-left {
+    display: flex;
+    align-items: center;
+}
+
+.todo-item-label {
+    padding: 10px;
+    border: 1px solid white;
+    margin-left: 12px;
+}
+
+.remove-item{
+    cursor: pointer;
     margin-left: 14px;
 }
 .remove-item:hover {
     color: black;
     
+}
+
+.status {
+    text-decoration: line-through;
+    color: grey;
+}
+
+.extra-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 16px;
+    border-top: 1px solid lightgrey;
+    padding-top: 14px;
+    margin-bottom: 14px;
+}
+button {
+    font-size: 14px;
+    background-color: white;
+    appearance: none;
+}
+button:hover {
+    background: lightgreen;
+}
+button:focus {
+    outline: none;
+}
+.active {
+    background: lightgreen;
 }
 
 
