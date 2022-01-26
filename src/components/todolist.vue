@@ -17,7 +17,6 @@
                    <div>{{todo.title}}</div>
                    <div>{{todo.description}}</div>
                    <div>{{todo.date}}</div>
-                   <div>{{todo.priority}}</div>
                 </div>
             </div>
 
@@ -26,13 +25,14 @@
                 <button @click="changePriority(index, prio =1)">Medium</button>
                 <button @click="changePriority(index, prio =2)">Low</button>
             </div>
-            <div class="remove-item" @click="removeTodo(key)">
+            <div class="remove-item" @click="removeTodo()">
                 🗑️
             </div>
         </div>
         </transition-group>
 
         <div class="extra-container">
+            <input type="text" placeholder="Search" v-model="nameSearch" @keyup.enter="Search">
             <div>{{this.todos.length}} total {{ remaining }} todo left</div>
         </div>
 
@@ -63,6 +63,7 @@ export default {
           description: '',
           todos: [],
           filter: 'all',
+          nameSearch: ''
       }
  },
  methods: {
@@ -98,6 +99,7 @@ export default {
     },
     changePriority(index, prio){
         this.todos[index].priority = prio
+        this.updateLocal()
     },
     removeTodo(index){
         this.todos.splice(index, 1)
@@ -126,6 +128,9 @@ export default {
 
             return filteredStatus.sort((a,b) => a.priority - b.priority)
         },
+        search(nameSearch){
+            return this.todos.filter(todo => todo.title == nameSearch)
+        }
         
         
     },
