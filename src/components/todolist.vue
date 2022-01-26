@@ -10,7 +10,7 @@
         <button @click="addTodo" class="todo-btn">Add</button>
 
         <transition-group name="fade" enter-active-class="animated fadeInUp" leave-active-class="animated fadeOutDown">
-        <div v-for="(todo,index) in todosFiltered" :key="todo.id" class="todo-item">
+        <!-- <div v-for="(todo,index) in todosFiltered" :key="todo.id" class="todo-item">
             <div class="todo-item-left">
                 <input type="checkbox" @click="changeStatus(index)">
                 <div class="todo-item-label" :class="{status : todo.status}">
@@ -28,7 +28,7 @@
             <div class="remove-item" @click="removeTodo()">
                 🗑️
             </div>
-        </div>
+        </div> -->
         </transition-group>
 
         <div class="extra-container">
@@ -53,9 +53,13 @@
 </template>
 
 <script>
+import todoItem from './todoItem.vue'
+
 export default {
  name: 'todolist',
-
+ components:{
+    todoItem
+ },
  data(){
       return {
           newTodo: '',
