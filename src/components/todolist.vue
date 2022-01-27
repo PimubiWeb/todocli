@@ -10,8 +10,12 @@
         <button @click="addTodo" class="todo-btn">Add</button>
 
         <transition-group name="fade" enter-active-class="animated fadeInUp" leave-active-class="animated fadeOutDown">
-        <!-- <div v-for="(todo,index) in todosFiltered" :key="todo.id" class="todo-item">
-            <div class="todo-item-left">
+        
+        <todoItem v-for="(todo,index) in todosFiltered" 
+        :key="todo.id" :todo="todo" :index="index"
+        @removedTodo="removeTodo" @changedStatus="changeStatus" :class="{status :todo.status}"
+        @changedPriority="changePriority">
+        <!--<div class="todo-item-left">
                 <input type="checkbox" @click="changeStatus(index)">
                 <div class="todo-item-label" :class="{status : todo.status}">
                    <div>{{todo.title}}</div>
@@ -29,6 +33,7 @@
                 🗑️
             </div>
         </div> -->
+        </todoItem>
         </transition-group>
 
         <div class="extra-container">
@@ -101,11 +106,13 @@ export default {
         this.todos[index].status = !this.todos[index].status
         this.updateLocal()
     },
-    changePriority(index, prio){
-        this.todos[index].priority = prio
+    changePriority(o){
+        console.log(o)
+        this.todos[o.index].priority = o.prio
         this.updateLocal()
     },
-    removeTodo(index){
+    removeTodo(id){
+        const index = this.todos.findIndex((item) => item.id == id)
         this.todos.splice(index, 1)
         this.updateLocal()
     },
