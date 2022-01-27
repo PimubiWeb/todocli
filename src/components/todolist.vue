@@ -1,6 +1,8 @@
 <template>
   <div class="container">
 
+      
+
        <input type="text" class="todo-input" placeholder="Enter a title todo"
        v-model="newTodo" @keyup.enter="addTodo">
        
@@ -37,7 +39,8 @@
         </transition-group>
 
         <div class="extra-container">
-            <input type="text" placeholder="Search" v-model="nameSearch" @keyup.enter="Search">
+            <input type="text" placeholder="Search" v-model="text" @keyup.enter="search">
+
             <div>{{this.todos.length}} total {{ remaining }} todo left</div>
         </div>
 
@@ -72,16 +75,16 @@ export default {
           description: '',
           todos: [],
           filter: 'all',
-          nameSearch: ''
+          text: '' //for computed method search 
       }
  },
  methods: {
 
-     addTodo(){
-         if(this.newTodo.length === 0){
+     addTodo(){ //create a new todo
+         if(this.newTodo.length === 0){ //need to write a name at least one letter to create a todo 
              return
          }
-         if(this.description.length === 0){
+         if(this.description.length === 0){ //need to write a description at least one letter to create a todo
              return
          }
          
@@ -99,24 +102,23 @@ export default {
          this.id++
          this.updateLocal()
     },
-    updateLocal(){
+    updateLocal(){ // method to update local storage
             localStorage.setItem('todos', JSON.stringify(this.todos))
     },
-    changeStatus(index){
+    changeStatus(index){ //change priority of a todo
         this.todos[index].status = !this.todos[index].status
         this.updateLocal()
     },
-    changePriority(o){
-        console.log(o)
-        this.todos[o.index].priority = o.prio
+    changePriority(todoItem){ // chanfe priority of a todo
+        this.todos[todoItem.index].priority = todoItem.prio
         this.updateLocal()
     },
-    removeTodo(id){
+    removeTodo(id){ //remove a todo
         const index = this.todos.findIndex((item) => item.id == id)
         this.todos.splice(index, 1)
         this.updateLocal()
     },
-    clearCompleted(){
+    clearCompleted(){ //remove all todos completed
         this.todos = this.todos.filter(todo => !todo.status)
         this.updateLocal()
     }
@@ -125,8 +127,8 @@ export default {
         remaining() {
             return this.todos.filter(todo => !todo.status).length
         },
-        todosFiltered() {
-            let filteredStatus = []
+        todosFiltered() { //computed method to filter by all,active and completed. Besides sort by priority level.
+            let filteredStatus = [] //all, active and completed
             if (this.filter == 'all') {
                 filteredStatus = this.todos
             } else if (this.filter == 'active') {
@@ -137,15 +139,16 @@ export default {
                 filteredStatus = this.todos
             }
 
-            return filteredStatus.sort((a,b) => a.priority - b.priority)
+            return filteredStatus.sort((a,b) => a.priority - b.priority) //priority
         },
-        search(nameSearch){
-            return this.todos.filter(todo => todo.title == nameSearch)
+        search() { //computed method to filter by title of a todo. doesnt work yet
+            return this.books.filter(book => {
+                return book.titulo.toLowerCase().includes(this.text.toLowerCase());
+            })
         }
         
-        
     },
-    mounted(){ 
+    mounted(){  //get todos array into local storage
         if(JSON.parse(localStorage.getItem('todos')))
             this.todos = JSON.parse(localStorage.getItem('todos'));
     }
@@ -156,6 +159,7 @@ export default {
 <style>
 @import url("https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css");
 
+/* general styles of my todo list*/
 .todo-input {
     width: 100%;
     padding: 10px 18px;
@@ -181,15 +185,15 @@ export default {
 	-moz-transition: all 0.3s;
 	transition: all 0.3s;
 
-    border: 3px solid rgb(0, 0, 0);
+    border: 3px solid rgb(44, 62, 81);
 	color: rgb(0, 0, 0);
 
 
 }
 .todo-btn:hover,
 .todo-btn:active {
-    color: rgb(32, 179, 101);
-	background: rgb(0, 0, 0);
+    color: rgb(255, 255, 255);
+	background: rgb(52, 128, 228);
 }
 
 .todo-item {
@@ -240,14 +244,12 @@ button {
     appearance: none;
 }
 button:hover {
-    background: lightgreen;
+    background: rgb(72, 217, 243);
 }
 button:focus {
     outline: none;
 }
 .active {
-    background: lightgreen;
+    background: rgb(52, 128, 228);
 }
-
-
 </style>
