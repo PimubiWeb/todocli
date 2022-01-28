@@ -1,6 +1,8 @@
 <template>
   <div class="container">
 
+      
+
        <input type="text" class="todo-input" placeholder="Enter a title todo"
        v-model="newTodo" @keyup.enter="addTodo">
        
@@ -37,7 +39,8 @@
         </transition-group>
 
         <div class="extra-container">
-            <input type="text" placeholder="Search" v-model="nameSearch" @keyup.enter="Search">
+            <input type="text" placeholder="Search" v-model="text" @keyup.enter="search">
+
             <div>{{this.todos.length}} total {{ remaining }} todo left</div>
         </div>
 
@@ -72,16 +75,16 @@ export default {
           description: '',
           todos: [],
           filter: 'all',
-          nameSearch: ''
+          text: '' //for computed method search 
       }
  },
  methods: {
 
-     addTodo(){
-         if(this.newTodo.length === 0){
+     addTodo(){ //create a new todo
+         if(this.newTodo.length === 0){ //need to write a name at least one letter to create a todo 
              return
          }
-         if(this.description.length === 0){
+         if(this.description.length === 0){ //need to write a description at least one letter to create a todo
              return
          }
          
@@ -102,7 +105,7 @@ export default {
     updateLocal(){ //method to update todos array in localstorage 
             localStorage.setItem('todos', JSON.stringify(this.todos))
     },
-    changeStatus(index){
+    changeStatus(index){ //change priority of a todo
         this.todos[index].status = !this.todos[index].status
         this.updateLocal()
     },
@@ -124,8 +127,8 @@ export default {
         remaining() { //computed method to length 
             return this.todos.filter(todo => !todo.status).length
         },
-        todosFiltered() { 
-            let filteredStatus = []
+        todosFiltered() { //computed method to filter by all,active and completed. Besides sort by priority level.
+            let filteredStatus = [] //all, active and completed
             if (this.filter == 'all') {
                 filteredStatus = this.todos
             } else if (this.filter == 'active') {
@@ -136,15 +139,14 @@ export default {
                 filteredStatus = this.todos
             }
 
-            return filteredStatus.sort((a,b) => a.priority - b.priority)
+            return filteredStatus.sort((a,b) => a.priority - b.priority) //priority
         },
         search(nameSearch){ //name
             return this.todos.filter(todo => todo.title == nameSearch)
         }
         
-        
     },
-    mounted(){ //get todos array and put into localstorage
+    mounted(){  //get todos array into local storage
         if(JSON.parse(localStorage.getItem('todos')))
             this.todos = JSON.parse(localStorage.getItem('todos'));
     }
@@ -155,6 +157,7 @@ export default {
 <style>
 @import url("https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css");
 
+/* general styles of my todo list*/
 .todo-input {
     width: 100%;
     padding: 10px 18px;
@@ -247,6 +250,4 @@ button:focus {
 .active {
     background: rgb(52, 128, 228);
 }
-
-
 </style>
