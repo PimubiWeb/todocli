@@ -99,33 +99,32 @@ export default {
          this.id++
          this.updateLocal()
     },
-    updateLocal(){
+    updateLocal(){ //method to update todos array in localstorage 
             localStorage.setItem('todos', JSON.stringify(this.todos))
     },
     changeStatus(index){
         this.todos[index].status = !this.todos[index].status
         this.updateLocal()
     },
-    changePriority(o){
-        console.log(o)
-        this.todos[o.index].priority = o.prio
+    changePriority(todoItem){ //change priority number of a todo item
+        this.todos[todoItem.index].priority = todoItem.prio
         this.updateLocal()
     },
-    removeTodo(id){
+    removeTodo(id){ //remove a todo about his todo.id
         const index = this.todos.findIndex((item) => item.id == id)
         this.todos.splice(index, 1)
         this.updateLocal()
     },
-    clearCompleted(){
+    clearCompleted(){ //remove all todos completed
         this.todos = this.todos.filter(todo => !todo.status)
         this.updateLocal()
     }
     },
     computed:{
-        remaining() {
+        remaining() { //computed method to length 
             return this.todos.filter(todo => !todo.status).length
         },
-        todosFiltered() {
+        todosFiltered() { 
             let filteredStatus = []
             if (this.filter == 'all') {
                 filteredStatus = this.todos
@@ -139,13 +138,13 @@ export default {
 
             return filteredStatus.sort((a,b) => a.priority - b.priority)
         },
-        search(nameSearch){
+        search(nameSearch){ //name
             return this.todos.filter(todo => todo.title == nameSearch)
         }
         
         
     },
-    mounted(){ 
+    mounted(){ //get todos array and put into localstorage
         if(JSON.parse(localStorage.getItem('todos')))
             this.todos = JSON.parse(localStorage.getItem('todos'));
     }
@@ -181,15 +180,15 @@ export default {
 	-moz-transition: all 0.3s;
 	transition: all 0.3s;
 
-    border: 3px solid rgb(0, 0, 0);
+    border: 3px solid rgb(44, 62, 81);
 	color: rgb(0, 0, 0);
 
 
 }
 .todo-btn:hover,
 .todo-btn:active {
-    color: rgb(32, 179, 101);
-	background: rgb(0, 0, 0);
+    color: rgb(255, 255, 255);
+	background: rgb(52, 128, 228);
 }
 
 .todo-item {
@@ -240,13 +239,13 @@ button {
     appearance: none;
 }
 button:hover {
-    background: lightgreen;
+    background: rgb(72, 217, 243);
 }
 button:focus {
     outline: none;
 }
 .active {
-    background: lightgreen;
+    background: rgb(52, 128, 228);
 }
 
 
