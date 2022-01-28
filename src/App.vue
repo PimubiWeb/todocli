@@ -1,7 +1,6 @@
 <template>
   <div id="app" class="container">
     <img src="./assets/logo.png" class="logo">
-    <h1>To Do List</h1>
     <todolist></todolist>    
   
   </div>
@@ -18,7 +17,6 @@ export default {
 }
 </script>
 <style>
-/* general styles for structuring my app vue */
 * {
   box-sizing: border-box;
 }
@@ -30,18 +28,14 @@ export default {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  color: rgb(44, 62, 81);
+  /* text-align: center; */
+  color: #2c3e50;
   margin-top: 60px;
   font-size: 24px;
 }
 .logo {
   display: block;
-  margin: 30px auto;
+  margin: 20px auto;
   height: 75px;
 }
-h1{
-  text-align: center;
-  font-family: Verdana, Geneva, Tahoma, sans-serif;
-}
-
 </style>
